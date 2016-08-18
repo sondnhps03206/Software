@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>sondnhps03206</title>
+<meta charset="utf-8">
+<link rel="icon" href="images/favicon.ico" type="image/x-icon">
+<link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+
+<!--[if lt IE 9]>   
+<script src="js/html5shiv.js"></script>
+<link href="css/ie.css" rel="stylesheet" type="text/css" media="screen">
+<link href="http://fonts.googleapis.com/css?family=Open+Sans:400" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=Open+Sans:300" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=Open+Sans:600" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=Open+Sans:700" rel="stylesheet" type="text/css">  
+<![endif]-->
+</head>
+<body>
+<div class="extra-block">
+  <div class="row-top">
+    <div class="main">
+    </div>
+  </div>
+  <header>
+    <div class="row-nav">
+      <div class="main">
+        <h1 class="logo"><a href="index.html"><img alt="" src="images/logo.png"></a></h1>
+        <nav>
+          <ul class="menu">
+			<li class="current"><a href="index.html">Trang chủ</a></li>
+            <li><a href="index.html">Sản Phẩm</a></li>
+            <li><a href="index.html">Lịch Sử và Di Sản</a></li>
+            <li><a href="index.html">Liên Hệ</a></li>
+          </ul>
+        </nav>
+        <div class="clear"></div>
+      </div>
+    </div>
+  </header>
+  <section id="content">
+    <div class="main-block policy">
+	  <div id="themsanpham">
+		<h1>Quản lý admin</h1>
+		<div id="them">
+			<label class="req">Mã sản phẩm</label>
+			<input type="text" id="masp" />
+			<br />
+			<label class="req">Tên sản phẩm</label>
+			<input type="text" id="tensp" />
+			<br />
+			<label class="req">Giá sản phẩm</label>
+			<input type="text" id="giasp" />
+			<br />
+			<input type="button" value="Thêm" onclick="Add()" />
+			<input type="button" value="Sửa" onclick="UpdateData();" />
+			
+			<br />
+		</div>
+	  </div>
+      <div class="main" id="hienthi">
+		
+      </div>
+    </div>
+  </section>
+</div>
+<div class="block">
+  <footer>
+    <div class="main aligncenter">
+    </div>
+  </footer>
+</div>
+</body>
+<script src="https://www.gstatic.com/firebasejs/3.3.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/3.3.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/3.3.0/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/3.3.0/firebase-storage.js"></script>
+<script src="https://www.gstatic.com/firebasejs/3.3.0/firebase.js"></script>
+<script>
+  // Initialize Firebase
+ var config = {
+    apiKey: "AIzaSyBUl-X0AQo5jjpk53zQizthtURCn12gmvM",
+    authDomain: "assignment-sondnhps03206.firebaseapp.com",
+    databaseURL: "https://assignment-sondnhps03206.firebaseio.com",
+    storageBucket: "assignment-sondnhps03206.appspot.com",
+  };
+  firebase.initializeApp(config);
+</script>
+    
+<script>
+  //Add data to Firebase
+  function Add(){
+	var masp = document.getElementById("masp").value;
+	var tensp = document.getElementById("tensp").value;
+	var giasp = document.getElementById("giasp").value;
+	
+	firebase.database().ref('sanpham').push({
+		masanpham: masp,
+		tensanpham: tensp,
+		giasanpham : giasp
+	});
+  }
+  
+  //Get data from Firebase
+  var commentsRef = firebase.database().ref('sanpham');
+  var show = document.getElementById("hienthi");
+  commentsRef.on('child_added', function(data) {
+	  show.innerHTML += '<p style="color:white;border:1px solid white;width:200px">Mã sản phẩm : '+data.val().masanpham+'</p>'
+						+'<img src="images/logo.png">'
+						+'<p style="color:white;border:1px solid white;width:200px">Tên sản phẩm : '+data.val().tensanpham+'</p>'
+						+'<p style="color:white;border:1px solid white;width:200px">Giá sản phẩm : '+data.val().giasanpham+'</p>'
+						+'<img src="images/del.png" style="width:50px;margin-left:50px;cursor:pointer" onclick="DeleteData(\''+data.key+'\');" >'
+						+'<img src="images/fix-128.png" style="width:50px;cursor:pointer" onclick="GetDataUpdate(\''+data.key+'\','+'\''+data.val().masanpham+'\','+'\''+data.val().tensanpham+'\','+'\''+data.val().giasanpham+'\');" >'; 
+  });
+  
+  //Delete Data from Firebase
+  function DeleteData(data){
+	firebase.database().ref('sanpham/'+data).remove();
+	LoadData();
+  }
+  
+  //Load Data 
+  function LoadData(){
+	var commentsLoad = firebase.database().ref('sanpham');
+	var showLoad = document.getElementById("hienthi");
+	showLoad.innerHTML = "";
+	//Nhớ sửa khi GetData
+	commentsLoad.on('child_added', function(data) {
+	  showLoad.innerHTML += '<p style="color:white;border:1px solid white;width:200px">Mã sản phẩm : '+data.val().masanpham+'</p>'
+						+'<img src="images/logo.png">'
+						+'<p style="color:white;border:1px solid white;width:200px">Tên sản phẩm : '+data.val().tensanpham+'</p>'
+						+'<p style="color:white;border:1px solid white;width:200px">Giá sản phẩm : '+data.val().giasanpham+'</p>'
+						+'<img src="images/del.png" style="width:50px;margin-left:50px;cursor:pointer" onclick="DeleteData(\''+data.key+'\');" >'
+						+'<img src="images/fix-128.png" style="width:50px;cursor:pointer" onclick="GetDataUpdate(\''+data.key+'\','+'\''+data.val().masanpham+'\','+'\''+data.val().tensanpham+'\','+'\''+data.val().giasanpham+'\');" >'; 
+	});
+  }
+  
+  var datakey = "";
+  
+  //Get Data Update from Firebase
+  function GetDataUpdate(data,masp,tensp,giasp){
+	document.getElementById("masp").value = masp;
+	document.getElementById("tensp").value = tensp;
+	document.getElementById("giasp").value = giasp;
+	
+	datakey = data;
+  }
+  
+  //Update Data
+  function UpdateData(){
+	var postData = {
+		masanpham: document.getElementById("masp").value,
+		tensanpham: document.getElementById("tensp").value,
+		giasanpham: document.getElementById("giasp").value
+	};
+	
+	var updates = {};
+	updates['/sanpham/' + datakey] = postData;
+	
+	firebase.database().ref().update(updates);
+	LoadData();
+  }
+  
